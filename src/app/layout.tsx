@@ -55,7 +55,7 @@ export default function RootLayout({
           </header>
           {/* 메인 콘텐츠 영역 */}
           <main>
-            <div className="w-[1350px] mx-auto flex justify-center items-center h-full text-center mt-36">
+            <div className="w-[1350px] mx-auto flex justify-center items-center h-full text-center mt-24">
               {children}
             </div>
           </main>

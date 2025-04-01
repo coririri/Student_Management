@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import { AiOutlineInbox } from "react-icons/ai";
 
 function CourseItem() {
