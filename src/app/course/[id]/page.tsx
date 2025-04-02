@@ -3,10 +3,13 @@ import { BsBox } from "react-icons/bs";
 import { useParams, useSearchParams } from "next/navigation";
 import Canlendar from "@/app/components/molecule/Canlendar";
 import { useState } from "react";
+import EnrollStudentModal from "@/app/components/modals/EnrollStudentModal";
 
 function Course() {
+  const [isOpenEnrollStudentModal, setIsOpenEnrollStudentModal] =
+    useState(false);
   const params = useParams();
-  const courseId = params.id;
+  const courseId = Number(params.id);
   const searchParams = useSearchParams();
 
   const [startDate, setStartDate] = useState<Date>(() => {
@@ -23,6 +26,11 @@ function Course() {
   console.log(courseId);
   return (
     <div className="w-full">
+      <EnrollStudentModal
+        courseId={courseId}
+        isModalOpen={isOpenEnrollStudentModal}
+        setIsModalOpen={setIsOpenEnrollStudentModal}
+      />
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <BsBox size="24px" className="mr-4" />
@@ -38,6 +46,9 @@ function Course() {
           <button
             type="button"
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl"
+            onClick={() => {
+              setIsOpenEnrollStudentModal(true);
+            }}
           >
             학생 추가
           </button>
