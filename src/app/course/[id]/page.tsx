@@ -5,11 +5,14 @@ import Canlendar from "@/app/components/molecule/Canlendar";
 import { useState } from "react";
 import EnrollStudentModal from "@/app/components/modals/EnrollStudentModal";
 import StudentListModal from "@/app/components/modals/StudentListModal";
+import DeleteConfirmModal from "@/app/components/modals/DeleteConfirmModal";
 
 function Course() {
   const [isOpenEnrollStudentModal, setIsOpenEnrollStudentModal] =
     useState(false);
   const [isOpenStudentListModal, setIsOpenStudentListModal] = useState(false);
+  const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
+    useState(false);
   const params = useParams();
   const courseId = Number(params.id);
   const searchParams = useSearchParams();
@@ -38,6 +41,11 @@ function Course() {
         isModalOpen={isOpenStudentListModal}
         setIsModalOpen={setIsOpenStudentListModal}
       />
+      <DeleteConfirmModal
+        courseId={courseId}
+        isModalOpen={isOpenDeleteConfirmModal}
+        setIsModalOpen={setIsOpenDeleteConfirmModal}
+      />
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <BsBox size="24px" className="mr-4" />
@@ -62,6 +70,9 @@ function Course() {
           <button
             type="button"
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4"
+            onClick={() => {
+              setIsOpenDeleteConfirmModal(true);
+            }}
           >
             학생 삭제
           </button>
