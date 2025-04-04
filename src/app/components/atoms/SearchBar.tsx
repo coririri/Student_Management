@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { BsBookmarkFill, BsSearch } from "react-icons/bs";
 
-function SearchBar() {
+interface SearchBarProps {
+  type?: string;
+  placeholder: string;
+}
+
+function SearchBar({ type, placeholder }: SearchBarProps) {
   const [searchValue, setSearchValue] = useState("");
 
   // 검색 실행 함수
@@ -14,14 +19,45 @@ function SearchBar() {
     }
   };
 
+  if (type == "basic") {
+    return (
+      <div className="flex items-center">
+        <div className="relative ml-56 w-[220px]">
+          <input
+            type="text"
+            placeholder={placeholder}
+            className="w-full pl-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3D3D3D] focus:border-[#3D3D3D] placeholder-gray-400 shadow-sm shadow-[#3D3D3D] shadow-offset-y-2 "
+            value={searchValue}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+            onClick={() => {
+              handleSearch();
+            }}
+          >
+            <BsSearch />
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="mb-10 flex items-center">
+    <div className="flex items-center">
       <BsBookmarkFill size="16px" />
       <span className="font-bold ml-4">반</span>
       <div className="relative ml-4 w-[220px]">
         <input
           type="text"
-          placeholder="반 이름"
+          placeholder={placeholder}
           className="w-full py-1 pl-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3D3D3D] focus:border-[#3D3D3D] placeholder-gray-400 shadow-sm shadow-[#3D3D3D] shadow-offset-y-2 "
           value={searchValue}
           onChange={(e) => {

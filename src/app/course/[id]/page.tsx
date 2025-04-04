@@ -4,10 +4,12 @@ import { useParams, useSearchParams } from "next/navigation";
 import Canlendar from "@/app/components/molecule/Canlendar";
 import { useState } from "react";
 import EnrollStudentModal from "@/app/components/modals/EnrollStudentModal";
+import StudentListModal from "@/app/components/modals/StudentListModal";
 
 function Course() {
   const [isOpenEnrollStudentModal, setIsOpenEnrollStudentModal] =
     useState(false);
+  const [isOpenStudentListModal, setIsOpenStudentListModal] = useState(false);
   const params = useParams();
   const courseId = Number(params.id);
   const searchParams = useSearchParams();
@@ -30,6 +32,11 @@ function Course() {
         courseId={courseId}
         isModalOpen={isOpenEnrollStudentModal}
         setIsModalOpen={setIsOpenEnrollStudentModal}
+      />
+      <StudentListModal
+        courseId={courseId}
+        isModalOpen={isOpenStudentListModal}
+        setIsModalOpen={setIsOpenStudentListModal}
       />
       <div className="flex items-center justify-between">
         <div className="flex items-center">
@@ -82,6 +89,16 @@ function Course() {
           <span className="w-[150px] text-center font-bold">숙제 이행률</span>
           <span className="w-[300px] text-center font-bold">특이사항</span>
           <span className="w-[200px] text-center font-bold">메시지 전송</span>
+        </div>
+        <div className="flex items-center border-b-1 border-[#D9D9D9] border-solid py-2">
+          <button
+            className="w-full bg-white hover:bg-blue-100 hover:shadow-md transition-all duration-200 rounded-md"
+            onClick={() => {
+              setIsOpenStudentListModal(true);
+            }}
+          >
+            <span className="font-bold text-xl text-black">+</span>
+          </button>
         </div>
       </div>
     </div>

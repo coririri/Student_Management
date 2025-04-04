@@ -32,7 +32,9 @@ export default function RootLayout({
               </div>
             </h2>
           </a>
-          <SearchBar />
+          <div className="mb-10">
+            <SearchBar placeholder="반 이름" />
+          </div>
           <div>
             <Navlist />
           </div>
