@@ -2,6 +2,8 @@ import Modal from "react-modal";
 import SearchBar from "../atoms/SearchBar";
 import StudentListItem from "../atoms/StudentListItem";
 
+import { AiFillCaretDown } from "react-icons/ai";
+
 const customModalStyles: ReactModal.Styles = {
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.4)",
@@ -58,7 +60,11 @@ function StudentListModal({
       <div className="w-[438px] py-2">
         <div className="flex items-center border-b border-[#D9D9D9] py-2">
           <input type="checkbox" className="w-6 h-6 mx-2" />
-          <span className="w-[109.5px] text-center font-bold">학년</span>
+          <span className="w-[109.5px] text-center font-bold">
+            <AiFillCaretDown size="22px" />
+            <span>학년</span>
+            <AiFillCaretDown size="22px" />
+          </span>
           <span className="w-[109.5px] text-center font-bold">이름</span>
           <span className="w-[219px] text-center font-bold">전화번호</span>
         </div>

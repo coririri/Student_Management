@@ -53,6 +53,9 @@ function Course() {
           <button
             type="button"
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl"
+            onClick={() => {
+              setIsOpenDeleteConfirmModal(true);
+            }}
           >
             반 삭제
           </button>
