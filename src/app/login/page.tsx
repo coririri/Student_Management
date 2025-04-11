@@ -1,22 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { loginUser } from "../api/auth";
+import { useRouter } from "next/navigation";
 
 function LoginPage() {
+  const router = useRouter();
+
   const [userForm, setUserForm] = useState({
     id: "",
     password: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Login info:", userForm);
-    // 로그인 처리 로직 추가 가능
+  const handleSubmit = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+      console.log("Login info:", userForm);
+
+      const user = await loginUser(userForm.id, userForm.password);
+      console.log(user);
+      return router.push("/");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("알 수 없는 오류가 발생했어요");
+      }
+    }
   };
 
   return (
@@ -49,6 +65,13 @@ function LoginPage() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
+        {errorMessage && (
+          <div className="mb-4 text-red-600 text-sm text-center">
+            {errorMessage}
+          </div>
+        )}
+
         <button
           type="submit"
           className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"

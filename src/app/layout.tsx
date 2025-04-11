@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import { AiOutlineSmile, AiOutlineSetting } from "react-icons/ai";
 import SearchBar from "./components/atoms/SearchBar";
-
 import "./globals.css";
 import Navlist from "./components/molecule/Navlist";
 

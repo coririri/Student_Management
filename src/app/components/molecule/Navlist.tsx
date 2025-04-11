@@ -6,6 +6,7 @@ import { useState } from "react";
 
 function Navlist() {
   const [isOpen, setIsOpen] = useState(true);
+
   return (
     <div>
       <div className="mx-2 px-3 py-3 bg-[#F3F7FF] rounded-lg relative">

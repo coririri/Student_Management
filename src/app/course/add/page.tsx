@@ -1,6 +1,18 @@
 "use client";
+import { supabase } from "@/app/api/subabase";
 
 export default function CourseAdd() {
+  const createCourseHandler = async (title: string) => {
+    const { data, error } = await supabase
+      .from("course")
+      .insert([{ name: title }])
+      .select();
+
+    console.log(data, error);
+
+    const user = await supabase.auth.getUser();
+    console.log(user);
+  };
   return (
     <form
       onSubmit={(e) => {
@@ -8,7 +20,7 @@ export default function CourseAdd() {
         const form = e.target as HTMLFormElement;
         const titleInput = form.elements.namedItem("title") as HTMLInputElement;
         const title = titleInput.value;
-        console.log(title);
+        createCourseHandler(title);
       }}
       className="bg-white  p-8 w-96"
     >
