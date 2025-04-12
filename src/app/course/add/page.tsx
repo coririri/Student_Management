@@ -1,26 +1,30 @@
 "use client";
-import { supabase } from "@/app/api/subabase";
+import { useRouter } from "next/navigation";
 
 export default function CourseAdd() {
-  const createCourseHandler = async (title: string) => {
-    const { data, error } = await supabase
-      .from("course")
-      .insert([{ name: title }])
-      .select();
+  const router = useRouter();
 
-    console.log(data, error);
-
-    const user = await supabase.auth.getUser();
-    console.log(user);
-  };
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
         const titleInput = form.elements.namedItem("title") as HTMLInputElement;
         const title = titleInput.value;
-        createCourseHandler(title);
+
+        const res = await fetch("/api/course", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title }),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          alert("반 생성 성공! ID: " + result.id);
+          router.refresh();
+        } else {
+          alert("에러: " + result.error);
+        }
       }}
       className="bg-white  p-8 w-96"
     >
