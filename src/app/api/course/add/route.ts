@@ -6,6 +6,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { title } = body;
 
+  if (title == "") {
+    return NextResponse.json(
+      { error: "반 제목은 필수입니다." },
+      { status: 400 }
+    );
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("course")

@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
   const errorMessage =
@@ -78,8 +77,7 @@ function LoginPage() {
 
             if (res.ok) {
               alert("로그인 성공");
-              router.push("/");
-              router.refresh();
+              window.location.href = "/";
             } else {
               alert("에러: " + result.error);
             }

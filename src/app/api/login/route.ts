@@ -2,7 +2,6 @@ import { createClient } from "../supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  console.log("음?");
   const supabase = await createClient();
   const body = await req.json();
   const { id, password } = body;
@@ -15,7 +14,6 @@ export async function POST(req: NextRequest) {
   };
 
   const { data, error } = await supabase.auth.signInWithPassword(loginData);
-  console.log(data, error);
   if (error)
     return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: "생성 실패" }, { status: 500 });

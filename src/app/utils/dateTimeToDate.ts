@@ -1,5 +1,4 @@
 export const dateTimeToDateAndZeroTimes = (dateTimeString: Date): string => {
-  console.log(dateTimeString);
   // 월 이름과 숫자 매핑
   const monthMap = {
     Jan: 0,

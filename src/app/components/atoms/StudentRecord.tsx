@@ -1,24 +1,62 @@
 "use client";
 
-import { useState } from "react";
 import { gradeTransform } from "@/app/utils/gradeTransform";
+import { studentRecordItem } from "@/app/types/studentRecordItem";
 
 interface StudentRecordProps {
-  grade: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+  recordId: string;
+  index: number;
+  date: Date;
+  studentId: string;
   name: string;
-  studentId: number;
+  grade: 0 | 2 | 1 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+  attendance: string;
+  late_time: number;
+  homework_completion: number;
+  notes: string;
+  progress: string;
+  phonenumber: string;
+  parent_phonenumber: string;
+  setCourseStudentList: React.Dispatch<
+    React.SetStateAction<studentRecordItem[]>
+  >;
+  handleCheckStudent: (id: string) => void;
+  checkedList: Set<string>;
+  setSaveCourseStudentListDebounce: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
 }
 
-function StudentRecord({ grade, name, studentId }: StudentRecordProps) {
-  const [attendance, setAttendance] = useState("attendance");
-  const [lateTime, setLateTime] = useState(0);
-  const [homeworkCompeltionRate, setHomeworkCompeltionRate] = useState(100);
-  const [progess, setProgress] = useState("");
-  const [notes, setNotes] = useState("");
-  console.log(studentId);
+function StudentRecord({
+  index,
+  date,
+  studentId,
+  name,
+  grade,
+  attendance,
+  late_time,
+  homework_completion,
+  notes,
+  progress,
+  phonenumber,
+  parent_phonenumber,
+  setCourseStudentList,
+  handleCheckStudent,
+  checkedList,
+  setSaveCourseStudentListDebounce,
+}: StudentRecordProps) {
+  console.log(date, studentId, phonenumber, parent_phonenumber);
   return (
     <div className="flex items-center border-b-1 border-[#D9D9D9] border-solid py-2">
-      <input type="checkbox" className="w-6 h-6 mx-2" />
+      <input
+        type="checkbox"
+        className="w-6 h-6 mx-2"
+        onChange={() => {
+          setSaveCourseStudentListDebounce((prev) => !prev);
+          if (studentId) handleCheckStudent(studentId);
+        }}
+        checked={checkedList.has(studentId)}
+      />
       <span className="w-[100px] text-center font-bold">
         {gradeTransform(grade)}
       </span>
@@ -28,7 +66,16 @@ function StudentRecord({ grade, name, studentId }: StudentRecordProps) {
           <span className="flex justify-between space-x-2">
             <select
               value={attendance}
-              onChange={(e) => setAttendance(e.target.value)}
+              onChange={(e) => {
+                const newAttendance = e.target.value;
+
+                setCourseStudentList((prev) =>
+                  prev.map((item, i) =>
+                    i === index ? { ...item, attendance: newAttendance } : item
+                  )
+                );
+                setSaveCourseStudentListDebounce((prev) => !prev);
+              }}
               className="w-[75px] p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="attendance">등원</option>
@@ -36,8 +83,17 @@ function StudentRecord({ grade, name, studentId }: StudentRecordProps) {
               <option value="absent">결석</option>
             </select>
             <select
-              value={lateTime}
-              onChange={(e) => setLateTime(Number(e.target.value))}
+              value={late_time}
+              onChange={(e) => {
+                const newLatetime = Number(e.target.value);
+
+                setCourseStudentList((prev) =>
+                  prev.map((item, i) =>
+                    i === index ? { ...item, late_time: newLatetime } : item
+                  )
+                );
+                setSaveCourseStudentListDebounce((prev) => !prev);
+              }}
               className="w-[75px] p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="10">10분</option>
@@ -50,8 +106,17 @@ function StudentRecord({ grade, name, studentId }: StudentRecordProps) {
           </span>
         ) : (
           <select
-            value={attendance}
-            onChange={(e) => setAttendance(e.target.value)}
+            value={attendance ?? ""}
+            onChange={(e) => {
+              const newAttendance = e.target.value;
+
+              setCourseStudentList((prev) =>
+                prev.map((item, i) =>
+                  i === index ? { ...item, attendance: newAttendance } : item
+                )
+              );
+              setSaveCourseStudentListDebounce((prev) => !prev);
+            }}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="attendance">등원</option>
@@ -64,17 +129,36 @@ function StudentRecord({ grade, name, studentId }: StudentRecordProps) {
       <span className="w-[300px] text-center font-bold">
         <input
           type="text"
-          className="w-[240px] border-1 border-solid border-black rounded-lg"
-          value={progess}
+          className="w-[240px] border-1 border-solid border-black rounded-lg pl-2"
+          value={progress ?? ""}
+          maxLength={50}
           onChange={(e) => {
-            setProgress(e.target.value);
+            const newProgress = e.target.value;
+
+            setCourseStudentList((prev) =>
+              prev.map((item, i) =>
+                i === index ? { ...item, progress: newProgress } : item
+              )
+            );
+            setSaveCourseStudentListDebounce((prev) => !prev);
           }}
         />
       </span>
       <span className="w-[150px] text-center font-bold">
         <select
-          value={homeworkCompeltionRate}
-          onChange={(e) => setHomeworkCompeltionRate(Number(e.target.value))}
+          value={homework_completion ?? ""}
+          onChange={(e) => {
+            const newHomework_completion = Number(e.target.value);
+
+            setCourseStudentList((prev) =>
+              prev.map((item, i) =>
+                i === index
+                  ? { ...item, homework_completion: newHomework_completion }
+                  : item
+              )
+            );
+            setSaveCourseStudentListDebounce((prev) => !prev);
+          }}
           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
         >
           <option value="100">100%</option>
@@ -88,14 +172,22 @@ function StudentRecord({ grade, name, studentId }: StudentRecordProps) {
       <span className="w-[300px] text-center font-bold">
         <input
           type="text"
-          className="w-[240px] border-1 border-solid border-black rounded-lg"
-          value={notes}
+          className="w-[240px] border-1 border-solid border-black rounded-lg pl-2"
+          value={notes ?? ""}
+          maxLength={100}
           onChange={(e) => {
-            setNotes(e.target.value);
+            const newNotes = e.target.value;
+
+            setCourseStudentList((prev) =>
+              prev.map((item, i) =>
+                i === index ? { ...item, notes: newNotes } : item
+              )
+            );
+            setSaveCourseStudentListDebounce((prev) => !prev);
           }}
         />
       </span>
-      <span className="w-[200px] text-center font-bold">
+      <span className="w-[160px] text-center font-bold">
         <button
           type="button"
           className="text-white bg-[#3D3D3D] font-xs py-1 px-8 rounded-3xl"

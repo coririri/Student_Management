@@ -5,7 +5,6 @@ import { getDay, getYear, getMonth, addDays, subDays } from "date-fns"; // date-
 import { BsFillTriangleFill } from "react-icons/bs";
 import { ko } from "date-fns/locale"; // 한국어 로케일을 가져옵니다.
 import DatePicker from "react-datepicker";
-import { dateTimeToDateAndZeroTimes } from "@/app/utils/dateTimeToDate";
 import { useRouter } from "next/navigation";
 import "react-datepicker/dist/react-datepicker.css";
 import "./css/calendar.css";
@@ -70,28 +69,18 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
   };
 
   return (
-    <div className="relative w-[255px] mx-auto">
+    <div className="relative w-[255px] mx-auto ">
       <button
-        className="absolute top-3 left-0 z-10"
+        className="absolute top-3 left-0 z-10 cursor-pointer"
         type="button"
         aria-label="왼쪽 넘기기"
         onClick={() => {
-          setStartDate((prevDate) =>
-            subDays(new Date(dateTimeToDateAndZeroTimes(prevDate)), 1)
-          ); // 현재 날짜에서 하루를 빼서 업데이트
+          setStartDate((prevDate) => subDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 빼서 업데이트
 
           const params = new URLSearchParams(searchParams.toString());
-          params.set(
-            "date",
-            subDays(
-              new Date(dateTimeToDateAndZeroTimes(startDate)),
-              1
-            ).toString()
-          ); // 새로운 날짜 설정
+          params.set("date", subDays(new Date(startDate), 1).toString()); // 새로운 날짜 설정
           router.push(`?${params.toString()}`);
-          setCurrentDate((prevDate) =>
-            subDays(new Date(dateTimeToDateAndZeroTimes(prevDate)), 1)
-          );
+          setCurrentDate((prevDate) => subDays(new Date(prevDate), 1));
         }}
       >
         <BsFillTriangleFill
@@ -104,7 +93,7 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
         withPortal
         className="date date-record"
         locale={ko}
-        selected={new Date(dateTimeToDateAndZeroTimes(startDate))}
+        selected={new Date(startDate)}
         // selected={new Date()}
         dateFormat="yyyy.MM.dd(eee)"
         useWeekdaysShort
@@ -112,6 +101,7 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
         ref={calendar}
         onInputClick={() => openDatePicker()}
         onChange={(date) => {
+          console.log(date);
           if (date !== null) datePickHandler(date);
         }}
         dayClassName={highlightSunday} // 일요일에 스타일 적용
@@ -125,7 +115,7 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
           <div className="m-2 flex justify-center items-center">
             <button
               type="button"
-              className="btn_month btn_month-prev"
+              className="btn_month btn_month-prev cursor-pointer"
               onClick={decreaseMonth}
               disabled={prevMonthButtonDisabled}
             >
@@ -140,7 +130,7 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
               onClick={increaseMonth}
               disabled={nextMonthButtonDisabled}
             >
-              <AiOutlineRight size="1.1rem" />
+              <AiOutlineRight size="1.1rem" className="z-0" />
             </button>
           </div>
         )}
@@ -149,39 +139,32 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
           <button
             type="button"
             onClick={cancelDatePicker}
-            className="font-bold text-lg bg-gray-200 text-gray-500 px-6 py-1 rounded-xl mr-3"
+            className="font-bold text-lg bg-gray-200 text-gray-500 px-6 py-1 rounded-xl mr-3 cursor-pointer"
           >
             취소
           </button>
           <button
             type="button"
             onClick={closeDatePicker}
-            className="font-bold text-lg bg-yellow-400 text-black-500 px-6 py-1 rounded-xl ml-3"
+            className="font-bold text-lg bg-yellow-400 text-black-500 px-6 py-1 rounded-xl ml-3 cursor-pointer"
           >
             선택
           </button>
         </div>
       </DatePicker>
       <button
-        className="absolute top-3 left-[14.5rem] z-20"
+        className="absolute top-3 left-[14.5rem] z-10 cursor-pointer"
         type="button"
         aria-label="왼쪽 넘기기"
         onClick={() => {
-          setStartDate((prevDate) =>
-            addDays(new Date(dateTimeToDateAndZeroTimes(prevDate)), 1)
-          ); // 현재 날짜에서 하루를 더해서 업데이트
+          setStartDate((prevDate) => addDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 더해서 업데이트
 
           const params = new URLSearchParams(
-            addDays(
-              new Date(dateTimeToDateAndZeroTimes(startDate)),
-              1
-            ).toString()
+            addDays(new Date(startDate), 1).toString()
           );
           params.set("date", currentDate.toString()); // 새로운 날짜 설정
           router.push(`?${params.toString()}`);
-          setCurrentDate((prevDate) =>
-            addDays(new Date(dateTimeToDateAndZeroTimes(prevDate)), 1)
-          );
+          setCurrentDate((prevDate) => addDays(new Date(prevDate), 1));
         }}
       >
         <BsFillTriangleFill

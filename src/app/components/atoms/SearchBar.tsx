@@ -1,5 +1,7 @@
 "use client";
 
+import { useEntireStudentListStore } from "@/app/store/useEntireStudentList";
+import { useMyCourseListStore } from "@/app/store/useMyCourseList";
 import { useState } from "react";
 import { BsBookmarkFill, BsSearch } from "react-icons/bs";
 
@@ -10,10 +12,11 @@ interface SearchBarProps {
 
 function SearchBar({ type, placeholder }: SearchBarProps) {
   const [searchValue, setSearchValue] = useState("");
+  const { setCourseList, setIsloadingCourseList } = useMyCourseListStore();
+  const { setStudentList } = useEntireStudentListStore();
 
   // 검색 실행 함수
   const handleSearch = () => {
-    console.log("검색");
     if (searchValue.trim() !== "") {
       // 검색 api 연결
     }
@@ -28,8 +31,15 @@ function SearchBar({ type, placeholder }: SearchBarProps) {
             placeholder={placeholder}
             className="w-full pl-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3D3D3D] focus:border-[#3D3D3D] placeholder-gray-400 shadow-sm shadow-[#3D3D3D] shadow-offset-y-2 "
             value={searchValue}
-            onChange={(e) => {
+            onChange={async (e) => {
               setSearchValue(e.target.value);
+              setIsloadingCourseList(true);
+              const res = await fetch(
+                `/api/student/all?keyword=${e.target.value}`
+              );
+              const data = await res.json();
+              setStudentList(data);
+              setIsloadingCourseList(false);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -60,8 +70,13 @@ function SearchBar({ type, placeholder }: SearchBarProps) {
           placeholder={placeholder}
           className="w-full py-1 pl-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3D3D3D] focus:border-[#3D3D3D] placeholder-gray-400 shadow-sm shadow-[#3D3D3D] shadow-offset-y-2 "
           value={searchValue}
-          onChange={(e) => {
+          onChange={async (e) => {
             setSearchValue(e.target.value);
+            setIsloadingCourseList(true);
+            const res = await fetch(`/api/course/my?keyword=${e.target.value}`);
+            const data = await res.json();
+            setCourseList(data);
+            setIsloadingCourseList(false);
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {

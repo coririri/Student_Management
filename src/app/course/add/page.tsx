@@ -1,8 +1,10 @@
 "use client";
+import { useMyCourseListStore } from "@/app/store/useMyCourseList";
 import { useRouter } from "next/navigation";
 
 export default function CourseAdd() {
   const router = useRouter();
+  const { setCourseList, setIsloadingCourseList } = useMyCourseListStore();
 
   return (
     <form
@@ -12,15 +14,22 @@ export default function CourseAdd() {
         const titleInput = form.elements.namedItem("title") as HTMLInputElement;
         const title = titleInput.value;
 
-        const res = await fetch("/api/course", {
+        const res = await fetch("/api/course/add", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title }),
         });
 
         const result = await res.json();
+
         if (res.ok) {
-          alert("반 생성 성공! ID: " + result.id);
+          setIsloadingCourseList(true);
+          const res = await fetch(`/api/course/my`);
+          const data = await res.json();
+          setCourseList(data);
+          setIsloadingCourseList(false);
+
+          router.push(`/course/${result.id}`);
           router.refresh();
         } else {
           alert("에러: " + result.error);

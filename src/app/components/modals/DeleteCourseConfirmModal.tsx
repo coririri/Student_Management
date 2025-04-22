@@ -1,3 +1,4 @@
+import { useMyCourseListStore } from "@/app/store/useMyCourseList";
 import Modal from "react-modal";
 
 const customModalStyles: ReactModal.Styles = {
@@ -27,18 +28,18 @@ const customModalStyles: ReactModal.Styles = {
   },
 };
 
-interface DeleteConfirmModalProps {
-  courseId: number;
+interface DeleteCourseConfirmModalProps {
+  courseId: string;
   isModalOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
 }
 
-function DeleteConfirmModal({
+function DeleteCourseConfirmModal({
   courseId,
   isModalOpen,
   setIsModalOpen,
-}: DeleteConfirmModalProps) {
-  console.log(courseId);
+}: DeleteCourseConfirmModalProps) {
+  const { setCourseList, setIsloadingCourseList } = useMyCourseListStore();
 
   return (
     <Modal
@@ -57,15 +58,43 @@ function DeleteConfirmModal({
           <button
             type="button"
             className="mr-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-6 rounded-full transition-all duration-200"
-            onClick={() => {
-              setIsModalOpen(false);
+            onClick={async () => {
+              try {
+                setIsloadingCourseList(true);
+                const response = await fetch(
+                  `/api/course/delete?courseId=${courseId}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                if (!response.ok) {
+                  throw new Error(`서버 응답 실패: ${response.status}`);
+                }
+                const res = await fetch(`/api/course/my`);
+                const data = await res.json();
+                setCourseList(data);
+                setIsloadingCourseList(false);
+
+                if (!res.ok) {
+                  throw new Error(`서버 응답 실패: ${res.status}`);
+                }
+
+                setIsModalOpen(false);
+                window.location.href = "/";
+              } catch (e) {
+                console.log(e);
+              }
             }}
           >
             확인
           </button>
           <button
             type="button"
-            className="ml-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-6 rounded-full transition-all duration-200"
+            className="ml-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-6 rounded-full transition-all duration-200 cursor-pointer"
             onClick={() => {
               setIsModalOpen(false);
             }}
@@ -78,4 +107,4 @@ function DeleteConfirmModal({
   );
 }
 
-export default DeleteConfirmModal;
+export default DeleteCourseConfirmModal;
