@@ -6,10 +6,12 @@ import { useEffect, useState } from "react";
 import { useMyCourseListStore } from "@/app/store/useMyCourseList";
 import { useRouter } from "next/navigation";
 import CourseItemSkeleton from "../skeletons/CourseItemSkeleton";
+import { useUserProfileStore } from "@/app/store/useUserProfile";
 
 function Navlist() {
   const [isOpen, setIsOpen] = useState(true);
-  const [teacherName, setTeacherName] = useState("");
+  const { name, setName } = useUserProfileStore();
+
   const {
     courseList,
     setCourseList,
@@ -28,7 +30,7 @@ function Navlist() {
 
       const nameRes = await fetch("/api/name");
       const nameData = await nameRes.json();
-      setTeacherName(nameData.name);
+      setName(nameData.name);
     };
     fetchData();
   }, []);
@@ -43,9 +45,7 @@ function Navlist() {
           }}
         >
           <AiOutlineBook size="22px" className="mr-2 flex-shrink-0" />
-          <span className="font-bold text-md pr-8">
-            {teacherName} 선생님 반
-          </span>
+          <span className="font-bold text-md pr-8">{name} 선생님 반</span>
           <AiFillCaretDown
             size="22px"
             className={`absolute right-4 flex-shrink-0 transition-transform duration-200 ${

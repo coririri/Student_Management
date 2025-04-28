@@ -17,6 +17,6 @@ export async function GET() {
     .select("*")
     .eq("id", user.id) // 또는 .eq("user_id", user.id) 등
     .single();
-  console.log(data);
-  return NextResponse.json({ name: data.username });
+
+  return NextResponse.json({ name: data.username, role: data.role });
 }

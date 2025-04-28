@@ -43,10 +43,7 @@ export default function RootLayout({
         {/* 오른쪽 영역 (Header + Contents) */}
         <div className="grow flex flex-col">
           {/* 상단 헤더 */}
-          <header className="h-16 flex items-start justify-end px-4 pt-12">
-            <p className="text-sm font-bold pr-2 relative">김선우</p>
-            <UserProfile />
-          </header>
+          <UserProfile />
           {/* 메인 콘텐츠 영역 */}
           <main>
             <div className="w-[1350px] mx-auto flex justify-center items-center h-full text-center mt-24">
