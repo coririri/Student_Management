@@ -45,7 +45,34 @@ function StudentRecord({
   checkedList,
   setSaveCourseStudentListDebounce,
 }: StudentRecordProps) {
-  console.log(date, studentId, phonenumber, parent_phonenumber);
+  console.log(date, phonenumber);
+
+  const sendMessage = async () => {
+    try {
+      const res = await fetch("/api/message/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: parent_phonenumber,
+          from: "01054158269", // ★ 여기 "인증된 발신번호"를 넣어야 해!
+          text: "text",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      alert("메시지 전송이 성공적으로 완료되었습니다.");
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(`${err.message}`);
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
+    }
+  };
+
   return (
     <div className="flex items-center border-b-1 border-[#D9D9D9] border-solid py-2">
       <input
@@ -191,6 +218,9 @@ function StudentRecord({
         <button
           type="button"
           className="text-white bg-[#3D3D3D] font-xs py-1 px-8 rounded-3xl"
+          onClick={async () => {
+            await sendMessage();
+          }}
         >
           전송
         </button>

@@ -60,7 +60,6 @@ function Course() {
   const [startDate, setStartDate] = useState<Date>(() => {
     const dateStr = searchParams.get("date");
     const date = dateStr ? new Date(dateStr) : new Date();
-    console.log(date);
     return date;
   });
 
@@ -149,6 +148,31 @@ function Course() {
     };
   }, [debouncedSaveData]);
 
+  const sendMessage = async (to: string, text: string) => {
+    try {
+      const res = await fetch("/api/message/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to,
+          from: "01054158269", // ★ 여기 "인증된 발신번호"를 넣어야 해!
+          text,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(`${err.message}`);
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
+    }
+  };
+
   return (
     <div className="w-full">
       <EnrollStudentModal
@@ -212,12 +236,32 @@ function Course() {
           <button
             type="button"
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4 cursor-pointer"
+            onClick={async () => {
+              for (const targetStudentId of checkedList) {
+                const targetRecord = courseStudentList.find(
+                  (student) => student.student_id === targetStudentId
+                );
+
+                if (targetRecord) {
+                  await sendMessage(targetRecord.parent_phonenumber, "test");
+                }
+              }
+              alert("문자 전송이 끝났습니다.");
+            }}
           >
             선택 전송
           </button>
           <button
             type="button"
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4 cursor-pointer"
+            onClick={async () => {
+              for (const targetRecord of courseStudentList) {
+                if (targetRecord) {
+                  await sendMessage(targetRecord.parent_phonenumber, "test");
+                }
+              }
+              alert("전체 문자 전송이 끝났습니다.");
+            }}
           >
             전체 전송
           </button>
