@@ -62,7 +62,7 @@ function StudentRecord({
       console.log("ㅋㅋ");
       text += `\n진도[과제]: ${progress}`;
     }
-    if (notes != "" && progress != null) {
+    if (notes != "" && notes != null) {
       text += `\n특이사항: ${notes}`;
     }
 

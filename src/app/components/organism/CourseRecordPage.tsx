@@ -279,10 +279,7 @@ function CourseRecordPage() {
                     console.log("ㅋㅋ");
                     text += `\n진도[과제]: ${targetRecord.progress}`;
                   }
-                  if (
-                    targetRecord.notes != "" &&
-                    targetRecord.progress != null
-                  ) {
+                  if (targetRecord.notes != "" && targetRecord.notes != null) {
                     text += `\n특이사항: ${targetRecord.notes}`;
                   }
 
@@ -324,7 +321,7 @@ function CourseRecordPage() {
                     }
                     if (
                       targetRecord.notes != "" &&
-                      targetRecord.progress != null
+                      targetRecord.notes != null
                     ) {
                       text += `\n특이사항: ${targetRecord.notes}`;
                     }
