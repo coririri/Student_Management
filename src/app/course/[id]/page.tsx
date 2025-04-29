@@ -11,10 +11,15 @@ import StudentRecord from "@/app/components/atoms/StudentRecord";
 import { studentRecordItem } from "@/app/types/studentRecordItem";
 import { debounce } from "lodash";
 import StudentRecordSkeleton from "@/app/components/skeletons/StudentRecordSkeleton";
+import ProgressEntireInputModal from "@/app/components/modals/ProgressEntireInputModal";
+import NotesEntireInputModal from "@/app/components/modals/NotesEntireInputModal";
 
 function Course() {
   const searchParams = useSearchParams();
-
+  const [isProgressEntireInputModalOpen, setIsProgressEntireInputModalOpen] =
+    useState(false);
+  const [isNotesEntireInputModalOpen, setIsNotesEntireInputModalOpen] =
+    useState(false);
   const [isOpenEnrollStudentModal, setIsOpenEnrollStudentModal] =
     useState(false);
   const [isOpenStudentListModal, setIsOpenStudentListModal] = useState(false);
@@ -175,6 +180,18 @@ function Course() {
 
   return (
     <div className="w-full">
+      <ProgressEntireInputModal
+        setSaveCourseStudentListDebounce={setSaveCourseStudentListDebounce}
+        setCourseStudentList={setCourseStudentList}
+        isModalOpen={isProgressEntireInputModalOpen}
+        setIsModalOpen={setIsProgressEntireInputModalOpen}
+      />
+      <NotesEntireInputModal
+        setSaveCourseStudentListDebounce={setSaveCourseStudentListDebounce}
+        setCourseStudentList={setCourseStudentList}
+        isModalOpen={isNotesEntireInputModalOpen}
+        setIsModalOpen={setIsNotesEntireInputModalOpen}
+      />
       <EnrollStudentModal
         courseId={courseId}
         isModalOpen={isOpenEnrollStudentModal}
@@ -238,12 +255,39 @@ function Course() {
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4 cursor-pointer"
             onClick={async () => {
               for (const targetStudentId of checkedList) {
+                let lateText = "";
                 const targetRecord = courseStudentList.find(
                   (student) => student.student_id === targetStudentId
                 );
 
                 if (targetRecord) {
-                  await sendMessage(targetRecord.parent_phonenumber, "test");
+                  if (targetRecord.attendance == "late") {
+                    lateText = `지각 (${targetRecord.late_time}분)`;
+                  } else if (targetRecord.attendance == "attendance")
+                    lateText = "출석";
+                  else lateText = "결석";
+
+                  let text = `${targetRecord.name}(${
+                    startDate.getMonth() + 1
+                  }.${startDate.getDate()})\n출결: ${lateText}\n숙제 이행률: ${
+                    targetRecord.homework_completion
+                  }%`;
+
+                  if (
+                    targetRecord.progress != "" &&
+                    targetRecord.progress !== null
+                  ) {
+                    console.log("ㅋㅋ");
+                    text += `\n진도[과제]: ${targetRecord.progress}`;
+                  }
+                  if (
+                    targetRecord.notes != "" &&
+                    targetRecord.progress !== null
+                  ) {
+                    text += `\n특이사항: ${targetRecord.notes}`;
+                  }
+
+                  await sendMessage(targetRecord.parent_phonenumber, text);
                 }
               }
               alert("문자 전송이 끝났습니다.");
@@ -257,10 +301,40 @@ function Course() {
             onClick={async () => {
               for (const targetRecord of courseStudentList) {
                 if (targetRecord) {
-                  await sendMessage(targetRecord.parent_phonenumber, "test");
+                  let lateText = "";
+
+                  if (targetRecord) {
+                    if (targetRecord.attendance == "late") {
+                      lateText = `지각 (${targetRecord.late_time}분)`;
+                    } else if (targetRecord.attendance == "attendance")
+                      lateText = "출석";
+                    else lateText = "결석";
+
+                    let text = `${targetRecord.name}(${
+                      startDate.getMonth() + 1
+                    }.${startDate.getDate()})\n출결: ${lateText}\n숙제 이행률: ${
+                      targetRecord.homework_completion
+                    }%`;
+
+                    if (
+                      targetRecord.progress != "" &&
+                      targetRecord.progress !== null
+                    ) {
+                      console.log("ㅋㅋ");
+                      text += `\n진도[과제]: ${targetRecord.progress}`;
+                    }
+                    if (
+                      targetRecord.notes != "" &&
+                      targetRecord.progress !== null
+                    ) {
+                      text += `\n특이사항: ${targetRecord.notes}`;
+                    }
+
+                    await sendMessage(targetRecord.parent_phonenumber, text);
+                  }
                 }
+                alert("전체 문자 전송이 끝났습니다.");
               }
-              alert("전체 문자 전송이 끝났습니다.");
             }}
           >
             전체 전송
@@ -289,9 +363,30 @@ function Course() {
           <span className="w-[100px] text-center font-bold">학년</span>
           <span className="w-[150px] text-center font-bold">이름</span>
           <span className="w-[150px] text-center font-bold">출결</span>
-          <span className="w-[300px] text-center font-bold">진도</span>
+          <div className="w-[300px] text-center font-bold flex items-center justify-center">
+            <span className="ml-12">진도</span>
+            <button
+              className=" text-xs ml-4 text-white bg-[#3D3D3D] font-xs py-1 px-3 rounded-xl cursor-pointer"
+              onClick={() => {
+                setIsProgressEntireInputModalOpen(true);
+              }}
+            >
+              전체 입력
+            </button>
+          </div>
+
           <span className="w-[150px] text-center font-bold">숙제 이행률</span>
-          <span className="w-[300px] text-center font-bold">특이사항</span>
+          <span className="w-[300px] text-center font-bold">
+            <span className="ml-12">특이사항</span>
+            <button
+              className=" text-xs ml-4 text-white bg-[#3D3D3D] font-xs py-1 px-3 rounded-xl cursor-pointer"
+              onClick={() => {
+                setIsNotesEntireInputModalOpen(true);
+              }}
+            >
+              전체 입력
+            </button>
+          </span>
           <span className="w-[160px] text-center font-bold">메시지 전송</span>
         </div>
         <div className="flex flex-col items-center border-b-1 border-[#D9D9D9] border-solid py-2">
@@ -306,7 +401,7 @@ function Course() {
                 name={studentRecordItem.name}
                 grade={studentRecordItem.grade}
                 studentId={studentRecordItem.student_id}
-                date={studentRecordItem.date}
+                date={startDate}
                 attendance={studentRecordItem.attendance}
                 late_time={studentRecordItem.late_time}
                 homework_completion={studentRecordItem.homework_completion}

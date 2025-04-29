@@ -48,6 +48,24 @@ function StudentRecord({
   console.log(date, phonenumber);
 
   const sendMessage = async () => {
+    let lateText = "";
+    if (attendance == "late") {
+      lateText = `지각 (${late_time}분)`;
+    } else if (attendance == "attendance") lateText = "출석";
+    else lateText = "결석";
+
+    let text = `${name}(${
+      date.getMonth() + 1
+    }.${date.getDate()})\n출결: ${lateText}\n숙제 이행률: ${homework_completion}%`;
+
+    if (progress != "" && progress !== null) {
+      console.log("ㅋㅋ");
+      text += `\n진도[과제]: ${progress}`;
+    }
+    if (notes != "" && progress !== null) {
+      text += `\n특이사항: ${notes}`;
+    }
+
     try {
       const res = await fetch("/api/message/send", {
         method: "POST",
@@ -57,7 +75,7 @@ function StudentRecord({
         body: JSON.stringify({
           to: parent_phonenumber,
           from: "01054158269", // ★ 여기 "인증된 발신번호"를 넣어야 해!
-          text: "text",
+          text,
         }),
       });
 
@@ -217,7 +235,7 @@ function StudentRecord({
       <span className="w-[160px] text-center font-bold">
         <button
           type="button"
-          className="text-white bg-[#3D3D3D] font-xs py-1 px-8 rounded-3xl"
+          className="text-white bg-[#3D3D3D] font-xs py-1 px-8 rounded-3xl cursor-pointer"
           onClick={async () => {
             await sendMessage();
           }}
