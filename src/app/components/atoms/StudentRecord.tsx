@@ -58,11 +58,11 @@ function StudentRecord({
       date.getMonth() + 1
     }.${date.getDate()})\n출결: ${lateText}\n숙제 이행률: ${homework_completion}%`;
 
-    if (progress != "" && progress !== null) {
+    if (progress != "" && progress != null) {
       console.log("ㅋㅋ");
       text += `\n진도[과제]: ${progress}`;
     }
-    if (notes != "" && progress !== null) {
+    if (notes != "" && progress != null) {
       text += `\n특이사항: ${notes}`;
     }
 

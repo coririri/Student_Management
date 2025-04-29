@@ -274,14 +274,14 @@ function CourseRecordPage() {
 
                   if (
                     targetRecord.progress != "" &&
-                    targetRecord.progress !== null
+                    targetRecord.progress != null
                   ) {
                     console.log("ㅋㅋ");
                     text += `\n진도[과제]: ${targetRecord.progress}`;
                   }
                   if (
                     targetRecord.notes != "" &&
-                    targetRecord.progress !== null
+                    targetRecord.progress != null
                   ) {
                     text += `\n특이사항: ${targetRecord.notes}`;
                   }
@@ -317,14 +317,14 @@ function CourseRecordPage() {
 
                     if (
                       targetRecord.progress != "" &&
-                      targetRecord.progress !== null
+                      targetRecord.progress != null
                     ) {
                       console.log("ㅋㅋ");
                       text += `\n진도[과제]: ${targetRecord.progress}`;
                     }
                     if (
                       targetRecord.notes != "" &&
-                      targetRecord.progress !== null
+                      targetRecord.progress != null
                     ) {
                       text += `\n특이사항: ${targetRecord.notes}`;
                     }
