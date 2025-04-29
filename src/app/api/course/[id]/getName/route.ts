@@ -1,9 +1,8 @@
 import { createClient } from "../../../supabase/server";
 import { NextResponse } from "next/server";
 
-export async function GET({ params }: { params: { id: string } }) {
-  const { id } = await params;
-  const courseId = id;
+export async function GET(req: Request, context: { params: { id: string } }) {
+  const courseId = context.params.id;
   const supabase = await createClient();
   console.log(courseId);
   if (courseId == "0") {
