@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-deploy": "next build && next export"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
@@ -24,6 +25,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.26.9",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/lodash": "^4.17.16",
