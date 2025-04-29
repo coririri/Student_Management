@@ -20,7 +20,7 @@ type StudentCourseRow = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: courseId } = await params;
   const dateParam = request.nextUrl.searchParams.get("date");
