@@ -71,13 +71,11 @@ function LoginForm() {
             }),
           });
 
-          const result = await res.json();
-
           if (res.ok) {
             alert("로그인 성공");
             window.location.href = "/";
           } else {
-            alert("에러: " + result.error);
+            alert("에러: 사용자 정보가 올바르지 않습니다.");
           }
         }}
       >

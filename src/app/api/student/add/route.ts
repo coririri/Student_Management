@@ -1,5 +1,6 @@
 // app/api/course/route.ts
 import { createClient } from "@/app/api/supabase/server";
+import validatePhoneNumber from "@/app/utils/validatePhoneNumber";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -17,9 +18,23 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (parent_phonenumber == "") {
+  if (phonenumber == "") {
     return NextResponse.json(
-      { error: "부모님 전화번호는 필수입니다." },
+      { error: "학생 전화번호는 필수입니다." },
+      { status: 400 }
+    );
+  }
+
+  if (validatePhoneNumber(phonenumber)) {
+    return NextResponse.json(
+      { error: "학생 전화번호 형식 오류." },
+      { status: 400 }
+    );
+  }
+
+  if (validatePhoneNumber(parent_phonenumber)) {
+    return NextResponse.json(
+      { error: "부모님 전화번호 형식 오류." },
       { status: 400 }
     );
   }
