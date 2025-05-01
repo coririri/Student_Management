@@ -47,8 +47,6 @@ function DeleteStudentRecordConfirmModal({
   setCourseStudentList,
   startDate,
 }: DeleteStudentRecordConfirmModalProps) {
-  console.log(courseId);
-
   return (
     <Modal
       isOpen={isModalOpen}

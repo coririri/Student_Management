@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import { useRouter } from "next/navigation";
 import "react-datepicker/dist/react-datepicker.css";
 import "./css/calendar.css";
+import LoadingModal from "../modals/LoadingModal";
 
 interface CanlendarType {
   startDate: Date;
@@ -18,6 +19,7 @@ interface CanlendarType {
 function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Date>(startDate);
+  const [isLoading, setIsLoading] = useState(false);
 
   const calendar = useRef<DatePicker>(null);
 
@@ -70,17 +72,23 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
 
   return (
     <div className="relative w-[255px] mx-auto ">
+      <LoadingModal isModalOpen={isLoading} />
       <button
         className="absolute top-3 left-0 z-10 cursor-pointer"
         type="button"
         aria-label="왼쪽 넘기기"
         onClick={() => {
-          setStartDate((prevDate) => subDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 빼서 업데이트
+          setIsLoading(true);
+          setTimeout(() => {
+            setStartDate((prevDate) => subDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 빼서 업데이트
 
-          const params = new URLSearchParams(searchParams.toString());
-          params.set("date", subDays(new Date(startDate), 1).toString()); // 새로운 날짜 설정
-          router.push(`?${params.toString()}`);
-          setCurrentDate((prevDate) => subDays(new Date(prevDate), 1));
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("date", subDays(startDate, 1).toString()); // 새로운 날짜 설정
+            router.push(`?${params.toString()}`);
+
+            setCurrentDate((prevDate) => subDays(new Date(prevDate), 1));
+            setIsLoading(false);
+          }, 1000);
         }}
       >
         <BsFillTriangleFill
@@ -101,7 +109,6 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
         ref={calendar}
         onInputClick={() => openDatePicker()}
         onChange={(date) => {
-          console.log(date);
           if (date !== null) datePickHandler(date);
         }}
         dayClassName={highlightSunday} // 일요일에 스타일 적용
@@ -155,16 +162,19 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
       <button
         className="absolute top-3 left-[14.5rem] z-10 cursor-pointer"
         type="button"
-        aria-label="왼쪽 넘기기"
+        aria-label="오른쪽 넘기기"
         onClick={() => {
-          setStartDate((prevDate) => addDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 더해서 업데이트
-
-          const params = new URLSearchParams(
-            addDays(new Date(startDate), 1).toString()
-          );
-          params.set("date", currentDate.toString()); // 새로운 날짜 설정
-          router.push(`?${params.toString()}`);
-          setCurrentDate((prevDate) => addDays(new Date(prevDate), 1));
+          setIsLoading(true);
+          setTimeout(() => {
+            setStartDate((prevDate) => addDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 더해서 업데이트
+            const params = new URLSearchParams(
+              addDays(currentDate, 1).toString()
+            );
+            params.set("date", currentDate.toString()); // 새로운 날짜 설정
+            router.push(`?${params.toString()}`);
+            setCurrentDate((prevDate) => addDays(new Date(prevDate), 1));
+            setIsLoading(false);
+          }, 1000); // 1000ms = 1초
         }}
       >
         <BsFillTriangleFill

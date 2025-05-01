@@ -1,7 +1,7 @@
 "use client";
 import { BsBox } from "react-icons/bs";
 import { useSearchParams } from "next/navigation";
-import Canlendar from "@/app/components/molecule/Canlendar";
+import Calendar from "../molecule/Calendar";
 import { useCallback, useEffect, useState } from "react";
 import EnrollStudentModal from "@/app/components/modals/EnrollStudentModal";
 import StudentListModal from "@/app/components/modals/StudentListModal";
@@ -13,6 +13,7 @@ import { debounce } from "lodash";
 import StudentRecordSkeleton from "@/app/components/skeletons/StudentRecordSkeleton";
 import ProgressEntireInputModal from "@/app/components/modals/ProgressEntireInputModal";
 import NotesEntireInputModal from "@/app/components/modals/NotesEntireInputModal";
+import LoadingModal from "../modals/LoadingModal";
 
 function CourseRecordPage() {
   const searchParams = useSearchParams();
@@ -64,24 +65,32 @@ function CourseRecordPage() {
 
   const [startDate, setStartDate] = useState<Date>(() => {
     const dateStr = searchParams.get("date");
+    console.log(dateStr);
     const date = dateStr ? new Date(dateStr) : new Date();
+    console.log(date);
     return date;
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const fetchData = async (extractedId: string) => {
+      setIsLoading(true);
       const cousreStudentListres = await fetch(
         `/api/course/${extractedId}?date=${startDate}`
       );
       const cousreStudentListresdData = await cousreStudentListres.json();
       setCourseStudentList(cousreStudentListresdData);
+      setCheckedList(new Set());
 
       const courseNameRes = await fetch(`/api/course/${extractedId}/getName`);
       const { name } = await courseNameRes.json();
 
       setCourseName(name);
+      setIsLoading(false);
     };
     if (typeof window !== "undefined") {
+      console.log("음?");
       const url = window.location.pathname;
       const match = url.match(/\/course\/([a-f0-9\-]{36})/);
       const extractedId = match ? match[1] : "0";
@@ -137,7 +146,6 @@ function CourseRecordPage() {
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   useEffect(() => {
-    console.log("무엇?");
     if (isInitialLoad) {
       setIsInitialLoad(false); // 다음 렌더부터는 false
       return; // 초기 마운트 시에는 saveData 실행 안 함
@@ -216,6 +224,7 @@ function CourseRecordPage() {
         isModalOpen={isOpenDeleteCourseConfirmModal}
         setIsModalOpen={setIsOpenDeleteCourseConfirmModal}
       />
+      <LoadingModal isModalOpen={isLoading} />
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <BsBox size="24px" className="mr-4" />
@@ -253,6 +262,7 @@ function CourseRecordPage() {
             type="button"
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4 cursor-pointer"
             onClick={async () => {
+              setIsLoading(true);
               for (const targetStudentId of checkedList) {
                 let lateText = "";
                 const targetRecord = courseStudentList.find(
@@ -276,7 +286,6 @@ function CourseRecordPage() {
                     targetRecord.progress != "" &&
                     targetRecord.progress != null
                   ) {
-                    console.log("ㅋㅋ");
                     text += `\n진도[과제]: ${targetRecord.progress}`;
                   }
                   if (targetRecord.notes != "" && targetRecord.notes != null) {
@@ -286,6 +295,7 @@ function CourseRecordPage() {
                   await sendMessage(targetRecord.parent_phonenumber, text);
                 }
               }
+              setIsLoading(false);
               alert("문자 전송이 끝났습니다.");
             }}
           >
@@ -295,6 +305,7 @@ function CourseRecordPage() {
             type="button"
             className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4 cursor-pointer"
             onClick={async () => {
+              setIsLoading(true);
               for (const targetRecord of courseStudentList) {
                 if (targetRecord) {
                   let lateText = "";
@@ -316,7 +327,6 @@ function CourseRecordPage() {
                       targetRecord.progress != "" &&
                       targetRecord.progress != null
                     ) {
-                      console.log("ㅋㅋ");
                       text += `\n진도[과제]: ${targetRecord.progress}`;
                     }
                     if (
@@ -329,8 +339,10 @@ function CourseRecordPage() {
                     await sendMessage(targetRecord.parent_phonenumber, text);
                   }
                 }
-                alert("전체 문자 전송이 끝났습니다.");
               }
+
+              setIsLoading(false);
+              alert("전체 문자 전송이 끝났습니다.");
             }}
           >
             전체 전송
@@ -338,7 +350,7 @@ function CourseRecordPage() {
         </div>
       </div>
       <hr className="mt-4 mb-4" />
-      <Canlendar
+      <Calendar
         startDate={startDate}
         setStartDate={setStartDate}
         searchParams={searchParams}

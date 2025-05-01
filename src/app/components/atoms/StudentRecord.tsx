@@ -2,6 +2,8 @@
 
 import { gradeTransform } from "@/app/utils/gradeTransform";
 import { studentRecordItem } from "@/app/types/studentRecordItem";
+import LoadingModal from "../modals/LoadingModal";
+import { useState } from "react";
 
 interface StudentRecordProps {
   recordId: string;
@@ -45,9 +47,10 @@ function StudentRecord({
   checkedList,
   setSaveCourseStudentListDebounce,
 }: StudentRecordProps) {
-  console.log(date, phonenumber);
-
+  console.log(phonenumber);
+  const [messageSendLoadingOpen, isMessageSendLoadingOpen] = useState(false);
   const sendMessage = async () => {
+    isMessageSendLoadingOpen(true);
     let lateText = "";
     if (attendance == "late") {
       lateText = `지각 (${late_time}분)`;
@@ -59,7 +62,6 @@ function StudentRecord({
     }.${date.getDate()})\n출결: ${lateText}\n숙제 이행률: ${homework_completion}%`;
 
     if (progress != "" && progress != null) {
-      console.log("ㅋㅋ");
       text += `\n진도[과제]: ${progress}`;
     }
     if (notes != "" && notes != null) {
@@ -80,6 +82,7 @@ function StudentRecord({
       });
 
       const data = await res.json();
+      isMessageSendLoadingOpen(false);
       if (!res.ok) throw new Error(data.message);
       alert("메시지 전송이 성공적으로 완료되었습니다.");
     } catch (err) {
@@ -93,6 +96,7 @@ function StudentRecord({
 
   return (
     <div className="flex items-center border-b-1 border-[#D9D9D9] border-solid py-2">
+      <LoadingModal isModalOpen={messageSendLoadingOpen} />
       <input
         type="checkbox"
         className="w-6 h-6 mx-2"

@@ -8,7 +8,6 @@ export async function GET(
   const { id } = await params;
   const courseId = id;
   const supabase = await createClient();
-  console.log(courseId);
   if (courseId == "0") {
     return NextResponse.json(
       { error: "조회할 반이 존재하지 않습니다." },
