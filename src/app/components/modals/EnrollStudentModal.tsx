@@ -106,14 +106,11 @@ function EnrollStudentModal({
           <input
             type="text"
             className="w-[180px] border-1 border-solid border-black rounded-lg pl-2"
-            value={phonenumber}
+            value={formatPhoneNumber(phonenumber)}
             inputMode="numeric"
             placeholder="010-1234-5678"
             onChange={(e) => {
-              const formatted = formatPhoneNumber(e.target.value);
-              if (formatted.replace(/\D/g, "").length <= 11) {
-                setPhonenumber(formatted);
-              }
+              setPhonenumber(e.target.value);
             }}
           />
         </div>
@@ -123,14 +120,11 @@ function EnrollStudentModal({
           <input
             type="text"
             className="w-[180px] border-1 border-solid border-black rounded-lg pl-2"
-            value={parentPhonenumber}
+            value={formatPhoneNumber(parentPhonenumber)}
             inputMode="numeric"
             placeholder="010-1234-5678"
             onChange={(e) => {
-              const formatted = formatPhoneNumber(e.target.value);
-              if (formatted.replace(/\D/g, "").length <= 11) {
-                setParentPhonenumber(formatted);
-              }
+              setParentPhonenumber(e.target.value);
             }}
           />
         </div>

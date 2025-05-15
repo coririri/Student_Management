@@ -73,4 +73,40 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+
+  // const apiKey = process.env.ALIGO_API_KEY;
+  // const apiid = process.env.ALIOGO_ID;
+
+  // try {
+  //   console.log("1");
+
+  //   const bodyData = JSON.stringify({
+  //     sender: from,
+  //     receiver: to,
+  //     msg: text,
+  //     key: apiKey,
+  //     user_id: apiid,
+  //   });
+
+  //   const response = await fetch("https://apis.aligo.in/send/", {
+  //     method: "POST",
+  //     headers: {
+  //       "content-Type": "application/json",
+  //     },
+  //     body: bodyData,
+  //   });
+
+  //   const data = await response.json();
+  //   if (!response.ok) {
+  //     return NextResponse.json({
+  //       message: data.errorMessage || "Failed to send message",
+  //     });
+  //   }
+  //   return NextResponse.json({ message: "전송 성공" }, { status: 200 });
+  // } catch (error) {
+  //   return NextResponse.json(
+  //     { error: `메시지 전송 실패: ${error}` },
+  //     { status: 500 }
+  //   );
+  // }
 }
