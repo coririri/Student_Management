@@ -166,15 +166,15 @@ function Canlendar({ startDate, setStartDate, searchParams }: CanlendarType) {
         onClick={() => {
           setIsLoading(true);
           setTimeout(() => {
-            setStartDate((prevDate) => addDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 더해서 업데이트
-            const params = new URLSearchParams(
-              addDays(currentDate, 1).toString()
-            );
-            params.set("date", currentDate.toString()); // 새로운 날짜 설정
+            setStartDate((prevDate) => addDays(new Date(prevDate), 1)); // 현재 날짜에서 하루를 빼서 업데이트
+
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("date", addDays(startDate, 1).toString()); // 새로운 날짜 설정
             router.push(`?${params.toString()}`);
+
             setCurrentDate((prevDate) => addDays(new Date(prevDate), 1));
             setIsLoading(false);
-          }, 1000); // 1000ms = 1초
+          }, 1000);
         }}
       >
         <BsFillTriangleFill

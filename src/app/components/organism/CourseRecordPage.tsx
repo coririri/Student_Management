@@ -51,10 +51,6 @@ function CourseRecordPage() {
     return setCheckedList(newSet);
   };
 
-  // const handleUncheckAll = () => {
-  //   setCheckedList(new Set());
-  // };
-
   const toggleCheckAll = () => {
     const allIds = courseStudentList
       .filter((s) => s.student_id !== null)
@@ -65,9 +61,7 @@ function CourseRecordPage() {
 
   const [startDate, setStartDate] = useState<Date>(() => {
     const dateStr = searchParams.get("date");
-    console.log(dateStr);
     const date = dateStr ? new Date(dateStr) : new Date();
-    console.log(date);
     return date;
   });
 
@@ -80,6 +74,7 @@ function CourseRecordPage() {
         `/api/course/${extractedId}?date=${startDate}`
       );
       const cousreStudentListresdData = await cousreStudentListres.json();
+      console.log("받아온 데이터:", cousreStudentListresdData);
       setCourseStudentList(cousreStudentListresdData);
       setCheckedList(new Set());
 
@@ -90,7 +85,7 @@ function CourseRecordPage() {
       setIsLoading(false);
     };
     if (typeof window !== "undefined") {
-      console.log("음?");
+      console.log("초기화");
       const url = window.location.pathname;
       const match = url.match(/\/course\/([a-f0-9\-]{36})/);
       const extractedId = match ? match[1] : "0";
@@ -102,6 +97,7 @@ function CourseRecordPage() {
   }, [startDate]);
 
   const saveData = async () => {
+    console.log("저장");
     const url = window.location.pathname;
     const match = url.match(/\/course\/([a-f0-9\-]{36})/);
     const extractedId = match ? match[1] : "0";
@@ -184,7 +180,7 @@ function CourseRecordPage() {
       }
     }
   };
-
+  console.log(courseStudentList);
   return (
     <div className="w-full">
       <ProgressEntireInputModal
@@ -403,7 +399,9 @@ function CourseRecordPage() {
           {!isLoadingCourseStudentList &&
             courseStudentList.map((studentRecordItem, index) => (
               <StudentRecord
-                key={studentRecordItem.student_id}
+                key={
+                  studentRecordItem.record_id ?? studentRecordItem.student_id
+                }
                 recordId={studentRecordItem.record_id}
                 index={index}
                 name={studentRecordItem.name}
