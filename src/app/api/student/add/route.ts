@@ -25,14 +25,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (validatePhoneNumber(phonenumber)) {
+  if (!validatePhoneNumber(phonenumber)) {
     return NextResponse.json(
       { error: "학생 전화번호 형식 오류." },
       { status: 400 }
     );
   }
 
-  if (validatePhoneNumber(parent_phonenumber)) {
+  if (!validatePhoneNumber(parent_phonenumber)) {
     return NextResponse.json(
       { error: "부모님 전화번호 형식 오류." },
       { status: 400 }
