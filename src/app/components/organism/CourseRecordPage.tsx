@@ -169,7 +169,7 @@ function CourseRecordPage() {
         },
         body: JSON.stringify({
           to,
-          from: "01054158269", // ★ 여기 "인증된 발신번호"를 넣어야 해!
+          from: "0516317111", // ★ 여기 "인증된 발신번호"를 넣어야 해!
           text,
         }),
       });
