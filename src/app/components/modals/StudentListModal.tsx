@@ -18,18 +18,17 @@ const customModalStyles: ReactModal.Styles = {
     left: "0",
   },
   content: {
-    width: "750px",
-    height: "700px",
-    zIndex: "150",
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
+    width: "780px",
+    height: "700px",
+    zIndex: "150",
     borderRadius: "10px",
     boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.25)",
     backgroundColor: "white",
     justifyContent: "center",
-    overflow: "auto",
     padding: "30px",
   },
 };
@@ -75,14 +74,19 @@ function StudentListModal({
   return (
     <Modal
       isOpen={isModalOpen}
-      onRequestClose={() => {
+      onRequestClose={async () => {
         setIsModalOpen(false);
         handleUncheckAll();
+
+        const res = await fetch(`/api/student/all`);
+        const data = await res.json();
+        setStudentList(data);
+        setCheckedList();
       }}
       style={customModalStyles}
       ariaHideApp={false}
     >
-      <div className="flex flex-col relative justify-center items-center gap-2 mb-3">
+      <div className="flex flex-col justify-center items-center gap-2 mb-3">
         <span className="font-bold text-2xl mr-64">학생 전체 목록</span>
 
         <div className="flex items-center">
@@ -123,7 +127,7 @@ function StudentListModal({
           </button>
         </div>
       </div>
-      <div className="w-[679px] py-2">
+      <div>
         <div className="flex items-center border-b border-[#D9D9D9] py-2">
           <input
             type="checkbox"
@@ -173,6 +177,8 @@ function StudentListModal({
             부모님 전화번호
           </span>
         </div>
+      </div>
+      <div className="w-[679px] h-[470px] py-2 overflow-auto">
         <div>
           {studentList.map((student) => (
             <StudentListItem
@@ -185,69 +191,79 @@ function StudentListModal({
             />
           ))}
         </div>
-        <div className="absolute bottom-6 left-[270px]">
-          <button
-            type="button"
-            className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl mr-4 cursor-pointer"
-            onClick={async () => {
-              try {
-                const response = await fetch("/api/course/add/student", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    ids: Array.from(checkedList),
-                    courseId,
-                    date,
-                  }),
-                });
-                let result;
-                if (response.status !== 204) result = await response.json();
+      </div>
+      <div className="w-[200px] sticky bottom-[0px] left-[275px]">
+        <button
+          type="button"
+          className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl mr-4 cursor-pointer"
+          onClick={async () => {
+            try {
+              const response = await fetch("/api/course/add/student", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  ids: Array.from(checkedList),
+                  courseId,
+                  date,
+                }),
+              });
+              let result;
+              if (response.status !== 204) result = await response.json();
 
-                // 상태코드에 따라 처리
-                if (response.status === 200) {
-                  alert(`${result.inserted}명이 추가되었습니다.`);
-                } else if (response.status === 204) {
-                  alert("이미 모든 학생이 추가되어있습니다."); // 실제 응답 body 없음 주의
-                } else if (response.status === 400) {
-                  alert("잘못된 요청입니다. 입력값을 확인해주세요.");
-                } else if (response.status === 500) {
-                  alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
-                } else {
-                  alert(`예상치 못한 응답: ${response.status}`);
-                }
-
-                const url = window.location.pathname;
-                const match = url.match(/\/course\/([a-f0-9\-]{36})/);
-                const extractedId = match ? match[1] : "0";
-
-                const res = await fetch(
-                  `/api/course/${extractedId}?date=${date}`
-                );
-                const data = await res.json();
-                setCourseStudentList(data);
-
-                // 학생 추가 끝
-                handleUncheckAll();
-                setIsModalOpen(false);
-              } catch (e) {
-                console.error("요청 실패:", e);
-                alert("서버 요청 중 오류가 발생했습니다.");
+              // 상태코드에 따라 처리
+              if (response.status === 200) {
+                alert(`${result.inserted}명이 추가되었습니다.`);
+              } else if (response.status === 204) {
+                alert("이미 모든 학생이 추가되어있습니다."); // 실제 응답 body 없음 주의
+              } else if (response.status === 400) {
+                alert("잘못된 요청입니다. 입력값을 확인해주세요.");
+              } else if (response.status === 500) {
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+              } else {
+                alert(`예상치 못한 응답: ${response.status}`);
               }
-            }}
-          >
-            확인
-          </button>
-          <button
-            type="button"
-            className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4 cursor-pointer"
-            onClick={() => {
-              handleUncheckAll();
+
+              const url = window.location.pathname;
+              const match = url.match(/\/course\/([a-f0-9\-]{36})/);
+              const extractedId = match ? match[1] : "0";
+
+              const res = await fetch(
+                `/api/course/${extractedId}?date=${date}`
+              );
+              const data = await res.json();
+              setCourseStudentList(data);
+
+              // 학생 추가 끝
               setIsModalOpen(false);
-            }}
-          >
-            취소
-          </button>
-        </div>
+              handleUncheckAll();
+
+              const allStudentRes = await fetch(`/api/student/all`);
+              const allStudentData = await allStudentRes.json();
+              setStudentList(allStudentData);
+              setCheckedList();
+            } catch (e) {
+              console.error("요청 실패:", e);
+              alert("서버 요청 중 오류가 발생했습니다.");
+            }
+          }}
+        >
+          확인
+        </button>
+        <button
+          type="button"
+          className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl ml-4 cursor-pointer"
+          onClick={async () => {
+            setIsModalOpen(false);
+            handleUncheckAll();
+
+            const res = await fetch(`/api/student/all`);
+            const data = await res.json();
+            setStudentList(data);
+            setCheckedList();
+          }}
+        >
+          취소
+        </button>
       </div>
     </Modal>
   );

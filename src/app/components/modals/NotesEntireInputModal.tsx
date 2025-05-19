@@ -1,5 +1,6 @@
 import { studentRecordItem } from "@/app/types/studentRecordItem";
 import { useState } from "react";
+import { MutableRefObject } from "react";
 import Modal from "react-modal";
 
 const customModalStyles: ReactModal.Styles = {
@@ -30,9 +31,7 @@ const customModalStyles: ReactModal.Styles = {
 };
 
 interface NotesEntireInputModalProps {
-  setSaveCourseStudentListDebounce: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  saveCourseStudentListDebounce: MutableRefObject<boolean>;
   setCourseStudentList: React.Dispatch<
     React.SetStateAction<studentRecordItem[]>
   >;
@@ -41,7 +40,7 @@ interface NotesEntireInputModalProps {
 }
 
 function NotesEntireInputModal({
-  setSaveCourseStudentListDebounce,
+  saveCourseStudentListDebounce,
   setCourseStudentList,
   isModalOpen,
   setIsModalOpen,
@@ -79,7 +78,8 @@ function NotesEntireInputModal({
               setCourseStudentList((prev) =>
                 prev.map((item) => ({ ...item, notes: entireNotes }))
               );
-              setSaveCourseStudentListDebounce((prev) => !prev);
+              saveCourseStudentListDebounce.current =
+                !saveCourseStudentListDebounce.current;
               setIsModalOpen(false);
               setEntireNotes("");
             }}

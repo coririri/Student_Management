@@ -7,7 +7,7 @@ import Navlist from "./components/molecule/Navlist";
 import UserProfile from "./components/atoms/UserProfile";
 
 export const metadata: Metadata = {
-  title: "한편의 수학",
+  title: "한편의수학",
   description: "학생의 기록을 간단하게 관리하세요",
 };
 
@@ -25,7 +25,7 @@ export default function RootLayout({
             <h2 className="flex text-xl font-bold my-10 pl-1">
               <AiOutlineSmile size="42px" className="mr-3" />
               <div>
-                <span className="block">한편의 수학</span>
+                <span className="block">한편의수학</span>
                 <span className="block text-sm font-normal">
                   학생의 기록을 간단하게 관리하세요
                 </span>

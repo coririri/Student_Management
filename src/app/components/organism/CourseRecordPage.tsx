@@ -2,7 +2,7 @@
 import { BsBox } from "react-icons/bs";
 import { useSearchParams } from "next/navigation";
 import Calendar from "../molecule/Calendar";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import EnrollStudentModal from "@/app/components/modals/EnrollStudentModal";
 import StudentListModal from "@/app/components/modals/StudentListModal";
 import DeleteStudentRecordConfirmModal from "@/app/components/modals/DeleteStudentRecordConfirmModal";
@@ -32,14 +32,14 @@ function CourseRecordPage() {
     useState(false);
   const [courseId, setCourseId] = useState("0");
   const [courseName, setCourseName] = useState("");
+  const [isCourseNameModify, setIsCourseNameModify] = useState(false);
   const [courseStudentList, setCourseStudentList] = useState<
     studentRecordItem[]
   >([]);
   const [isLoadingCourseStudentList, setIsLoadingCourseStudentList] =
     useState(true);
   const [checkedList, setCheckedList] = useState<Set<string>>(new Set());
-  const [saveCourseStudentListDebounce, setSaveCourseStudentListDebounce] =
-    useState(true);
+  const saveCourseStudentListDebounce = useRef<boolean>(true);
 
   const handleCheckStudent = (id: string) => {
     const newSet = new Set(checkedList);
@@ -126,18 +126,18 @@ function CourseRecordPage() {
         ),
       });
 
-      const cousreStudentListres = await fetch(
-        `/api/course/${extractedId}?date=${startDate}`
-      );
-      const cousreStudentListresdData = await cousreStudentListres.json();
-      setCourseStudentList(cousreStudentListresdData);
+      // const cousreStudentListres = await fetch(
+      //   `/api/course/${extractedId}?date=${startDate}`
+      // );
+      // const cousreStudentListresdData = await cousreStudentListres.json();
+      // setCourseStudentList(cousreStudentListresdData);
     } catch (e) {
       console.log(e);
     }
   };
 
   const debouncedSaveData = useCallback(debounce(saveData, 1000), [
-    saveCourseStudentListDebounce,
+    saveCourseStudentListDebounce.current,
   ]);
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -184,13 +184,13 @@ function CourseRecordPage() {
   return (
     <div className="w-full">
       <ProgressEntireInputModal
-        setSaveCourseStudentListDebounce={setSaveCourseStudentListDebounce}
+        saveCourseStudentListDebounce={saveCourseStudentListDebounce}
         setCourseStudentList={setCourseStudentList}
         isModalOpen={isProgressEntireInputModalOpen}
         setIsModalOpen={setIsProgressEntireInputModalOpen}
       />
       <NotesEntireInputModal
-        setSaveCourseStudentListDebounce={setSaveCourseStudentListDebounce}
+        saveCourseStudentListDebounce={saveCourseStudentListDebounce}
         setCourseStudentList={setCourseStudentList}
         isModalOpen={isNotesEntireInputModalOpen}
         setIsModalOpen={setIsNotesEntireInputModalOpen}
@@ -224,15 +224,64 @@ function CourseRecordPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <BsBox size="24px" className="mr-4" />
-          <span className="font-bold text-2xl mr-4">{courseName}</span>
+          {isCourseNameModify ? (
+            <input
+              type="text"
+              className="font-bold text-2xl mr-4 border-b border-gray-300 focus:outline-none focus:border-black"
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+              onBlur={async () => {
+                await fetch("/api/course/modify", {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    title: courseName,
+                    courseId, // 실제 수정할 반 ID
+                  }),
+                });
+
+                setIsCourseNameModify(false);
+              }} // 포커스 아웃 시 수정 모드 종료
+              onKeyDown={async (e) => {
+                if (e.key === "Enter") {
+                  setIsCourseNameModify(false); // 엔터 누르면 수정 완료
+
+                  await fetch("/api/course/modify", {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      title: courseName,
+                      courseId, // 실제 수정할 반 ID
+                    }),
+                  });
+                }
+              }}
+              autoFocus
+            />
+          ) : (
+            <span className="font-bold text-2xl mr-4">{courseName}</span>
+          )}
           <button
             type="button"
-            className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl cursor-pointer"
+            className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl cursor-pointer mr-4"
             onClick={() => {
               setIsOpenDeleteCourseConfirmModal(true);
             }}
           >
             반 삭제
+          </button>
+          <button
+            type="button"
+            className="text-white bg-[#3D3D3D] font-xs py-1 px-6 rounded-3xl cursor-pointer"
+            onClick={() => {
+              setIsCourseNameModify(true);
+            }}
+          >
+            반명 수정
           </button>
         </div>
         <div>
@@ -367,7 +416,11 @@ function CourseRecordPage() {
           <span className="w-[100px] text-center font-bold">학년</span>
           <span className="w-[150px] text-center font-bold">이름</span>
           <span className="w-[150px] text-center font-bold">출결</span>
-          <div className="w-[300px] text-center font-bold flex items-center justify-center">
+
+          <span className="w-[150px] ml-[50px] text-center font-bold">
+            숙제 이행률
+          </span>
+          <div className="w-[275px] text-center font-bold flex items-center justify-center">
             <span className="ml-12">진도</span>
             <button
               className=" text-xs ml-4 text-white bg-[#3D3D3D] font-xs py-1 px-3 rounded-xl cursor-pointer"
@@ -378,9 +431,7 @@ function CourseRecordPage() {
               전체 입력
             </button>
           </div>
-
-          <span className="w-[150px] text-center font-bold">숙제 이행률</span>
-          <span className="w-[300px] text-center font-bold">
+          <span className="w-[275px] text-center font-bold">
             <span className="ml-12">특이사항</span>
             <button
               className=" text-xs ml-4 text-white bg-[#3D3D3D] font-xs py-1 px-3 rounded-xl cursor-pointer"
@@ -418,9 +469,7 @@ function CourseRecordPage() {
                 setCourseStudentList={setCourseStudentList}
                 handleCheckStudent={handleCheckStudent}
                 checkedList={checkedList}
-                setSaveCourseStudentListDebounce={
-                  setSaveCourseStudentListDebounce
-                }
+                saveCourseStudentListDebounce={saveCourseStudentListDebounce}
               />
             ))}
           <button

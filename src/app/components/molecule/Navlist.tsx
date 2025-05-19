@@ -56,7 +56,7 @@ function Navlist() {
       </div>
       {isLoadingCourseList && <CourseItemSkeleton />}
       {isOpen && !isLoadingCourseList && (
-        <ul>
+        <ul className="overflow-auto h-[720px]">
           {courseList.map((course) => (
             <CourseItem key={course.id} id={course.id} name={course.name} />
           ))}

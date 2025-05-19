@@ -1,5 +1,6 @@
 "use client";
 
+import { MutableRefObject } from "react";
 import { gradeTransform } from "@/app/utils/gradeTransform";
 import { studentRecordItem } from "@/app/types/studentRecordItem";
 import LoadingModal from "../modals/LoadingModal";
@@ -24,9 +25,7 @@ interface StudentRecordProps {
   >;
   handleCheckStudent: (id: string) => void;
   checkedList: Set<string>;
-  setSaveCourseStudentListDebounce: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  saveCourseStudentListDebounce: MutableRefObject<boolean>;
 }
 
 function StudentRecord({
@@ -45,7 +44,7 @@ function StudentRecord({
   setCourseStudentList,
   handleCheckStudent,
   checkedList,
-  setSaveCourseStudentListDebounce,
+  saveCourseStudentListDebounce,
 }: StudentRecordProps) {
   console.log(phonenumber);
   const [messageSendLoadingOpen, isMessageSendLoadingOpen] = useState(false);
@@ -101,7 +100,8 @@ function StudentRecord({
         type="checkbox"
         className="w-6 h-6 mx-2"
         onChange={() => {
-          setSaveCourseStudentListDebounce((prev) => !prev);
+          saveCourseStudentListDebounce.current =
+            !saveCourseStudentListDebounce.current;
           if (studentId) handleCheckStudent(studentId);
         }}
         checked={checkedList.has(studentId)}
@@ -123,7 +123,8 @@ function StudentRecord({
                     i === index ? { ...item, attendance: newAttendance } : item
                   )
                 );
-                setSaveCourseStudentListDebounce((prev) => !prev);
+                saveCourseStudentListDebounce.current =
+                  !saveCourseStudentListDebounce.current;
               }}
               className="w-[75px] p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
@@ -141,7 +142,8 @@ function StudentRecord({
                     i === index ? { ...item, late_time: newLatetime } : item
                   )
                 );
-                setSaveCourseStudentListDebounce((prev) => !prev);
+                saveCourseStudentListDebounce.current =
+                  !saveCourseStudentListDebounce.current;
               }}
               className="w-[75px] p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
@@ -164,7 +166,8 @@ function StudentRecord({
                   i === index ? { ...item, attendance: newAttendance } : item
                 )
               );
-              setSaveCourseStudentListDebounce((prev) => !prev);
+              saveCourseStudentListDebounce.current =
+                !saveCourseStudentListDebounce.current;
             }}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
@@ -175,7 +178,33 @@ function StudentRecord({
         )}
       </span>
 
-      <span className="w-[300px] text-center font-bold">
+      <span className="w-[150px] text-center font-bold ml-[50px]">
+        <select
+          value={homework_completion ?? ""}
+          onChange={(e) => {
+            const newHomework_completion = Number(e.target.value);
+
+            setCourseStudentList((prev) =>
+              prev.map((item, i) =>
+                i === index
+                  ? { ...item, homework_completion: newHomework_completion }
+                  : item
+              )
+            );
+            saveCourseStudentListDebounce.current =
+              !saveCourseStudentListDebounce.current;
+          }}
+          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="100">100%</option>
+          <option value="80">80%</option>
+          <option value="60">60%</option>
+          <option value="40">40%</option>
+          <option value="20">20%</option>
+          <option value="0">0%</option>
+        </select>
+      </span>
+      <span className="w-[275px] text-center font-bold">
         <input
           type="text"
           className="w-[240px] border-1 border-solid border-black rounded-lg pl-2"
@@ -189,36 +218,12 @@ function StudentRecord({
                 i === index ? { ...item, progress: newProgress } : item
               )
             );
-            setSaveCourseStudentListDebounce((prev) => !prev);
+            saveCourseStudentListDebounce.current =
+              !saveCourseStudentListDebounce.current;
           }}
         />
       </span>
-      <span className="w-[150px] text-center font-bold">
-        <select
-          value={homework_completion ?? ""}
-          onChange={(e) => {
-            const newHomework_completion = Number(e.target.value);
-
-            setCourseStudentList((prev) =>
-              prev.map((item, i) =>
-                i === index
-                  ? { ...item, homework_completion: newHomework_completion }
-                  : item
-              )
-            );
-            setSaveCourseStudentListDebounce((prev) => !prev);
-          }}
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="100">100%</option>
-          <option value="80">80%</option>
-          <option value="60">60%</option>
-          <option value="40">40%</option>
-          <option value="20">20%</option>
-          <option value="0">0%</option>
-        </select>
-      </span>
-      <span className="w-[300px] text-center font-bold">
+      <span className="w-[275px] text-center font-bold">
         <input
           type="text"
           className="w-[240px] border-1 border-solid border-black rounded-lg pl-2"
@@ -232,7 +237,8 @@ function StudentRecord({
                 i === index ? { ...item, notes: newNotes } : item
               )
             );
-            setSaveCourseStudentListDebounce((prev) => !prev);
+            saveCourseStudentListDebounce.current =
+              !saveCourseStudentListDebounce.current;
           }}
         />
       </span>
