@@ -57,9 +57,15 @@ function Navlist() {
       {isLoadingCourseList && <CourseItemSkeleton />}
       {isOpen && !isLoadingCourseList && (
         <ul className="overflow-auto h-[720px]">
-          {courseList.map((course) => (
-            <CourseItem key={course.id} id={course.id} name={course.name} />
-          ))}
+          {courseList
+            .sort((a, b) => {
+              const numA = parseInt(a.name.replace(/\D/g, ""), 10);
+              const numB = parseInt(b.name.replace(/\D/g, ""), 10);
+              return numA - numB;
+            })
+            .map((course) => (
+              <CourseItem key={course.id} id={course.id} name={course.name} />
+            ))}
         </ul>
       )}
       {/* 버튼을 항상 아래에 고정 */}
