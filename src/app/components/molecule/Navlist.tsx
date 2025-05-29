@@ -57,10 +57,33 @@ function Navlist() {
       {isLoadingCourseList && <CourseItemSkeleton />}
       {isOpen && !isLoadingCourseList && (
         <ul className="overflow-auto h-[720px]">
-          {courseList
+          {/* {courseList
             .sort((a, b) => {
               const numA = parseInt(a.name.replace(/\D/g, ""), 10);
               const numB = parseInt(b.name.replace(/\D/g, ""), 10);
+              return numA - numB;
+            })
+            .map((course) => (
+              <CourseItem key={course.id} id={course.id} name={course.name} />
+            ))} */}
+          {courseList
+            .sort((a, b) => {
+              const nameA = a.name;
+              const nameB = b.name;
+
+              // 한글(비숫자) 부분 추출
+              const textA = nameA.replace(/[0-9]/g, "").trim();
+              const textB = nameB.replace(/[0-9]/g, "").trim();
+
+              // 숫자 부분 추출 (여러 개일 경우 첫 숫자만 기준으로)
+              const numA = parseInt(nameA.replace(/\D/g, ""), 10);
+              const numB = parseInt(nameB.replace(/\D/g, ""), 10);
+
+              // 1. 한글 기준으로 정렬
+              const textCompare = textA.localeCompare(textB, "ko");
+              if (textCompare !== 0) return textCompare;
+
+              // 2. 숫자 기준으로 정렬
               return numA - numB;
             })
             .map((course) => (
