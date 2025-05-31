@@ -7,9 +7,20 @@ import { useMyCourseListStore } from "@/app/store/useMyCourseList";
 import { useRouter } from "next/navigation";
 import CourseItemSkeleton from "../skeletons/CourseItemSkeleton";
 import { useUserProfileStore } from "@/app/store/useUserProfile";
+import {
+  DndContext,
+  DragEndEvent,
+  MouseSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { Course } from "@/app/types/course";
+import LoadingModal from "../modals/LoadingModal";
 
 function Navlist() {
   const [isOpen, setIsOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const { name, setName } = useUserProfileStore();
 
   const {
@@ -19,6 +30,14 @@ function Navlist() {
     setIsloadingCourseList,
   } = useMyCourseListStore();
   const router = useRouter();
+
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+      delay: 200,
+      tolerance: 5,
+    },
+  });
+  const sensors = useSensors(mouseSensor);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,8 +54,57 @@ function Navlist() {
     fetchData();
   }, []);
 
+  const arrayMoveAndReorder = (
+    courseList: Course[],
+    oldIndex: number,
+    newIndex: number
+  ): Course[] => {
+    const updatedList = [...courseList];
+    const [movedItem] = updatedList.splice(oldIndex, 1);
+    updatedList.splice(newIndex, 0, movedItem);
+
+    return updatedList.map((course, index) => ({
+      ...course,
+      order: index, // 0부터 순서 재정의
+    }));
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = courseList.findIndex((c) => c.id === active.id);
+    const newIndex = courseList.findIndex((c) => c.id === over.id);
+    const reordered = arrayMoveAndReorder(courseList, oldIndex, newIndex);
+    // 서버에 변경사항 반영 요청
+    try {
+      setIsLoading(true);
+      await fetch("/api/course/order", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          updates: reordered.map((course) => ({
+            id: course.id,
+            order: course.order,
+          })),
+        }),
+      });
+
+      setIsLoading(false);
+
+      // 로컬 상태 업데이트
+      setCourseList(reordered);
+    } catch (error) {
+      console.error("순서 변경 실패:", error);
+      // 실패 시 사용자에게 알림 표시하거나 이전 상태로 롤백할 수 있음
+    }
+  };
+
   return (
     <div>
+      <LoadingModal isModalOpen={isLoading} />
       <div className="mx-2 px-3 py-3 bg-[#F3F7FF] rounded-lg relative">
         <button
           className="flex items-center cursor-pointer"
@@ -56,13 +124,19 @@ function Navlist() {
       </div>
       {isLoadingCourseList && <CourseItemSkeleton />}
       {isOpen && !isLoadingCourseList && (
-        <ul className="overflow-auto h-[720px]">
-          {courseList
-            .sort((a, b) => a.order - b.order)
-            .map((course) => (
-              <CourseItem key={course.id} id={course.id} name={course.name} />
-            ))}
-        </ul>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+        >
+          <ul className="overflow-auto h-[720px]">
+            {courseList
+              .sort((a, b) => a.order - b.order)
+              .map((course) => (
+                <CourseItem key={course.id} id={course.id} name={course.name} />
+              ))}
+          </ul>
+        </DndContext>
       )}
       {/* 버튼을 항상 아래에 고정 */}
       <button
