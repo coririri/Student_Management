@@ -1,5 +1,6 @@
 "use client";
 
+import { useMyCourseListStore } from "@/app/store/useMyCourseList";
 import { useUserProfileStore } from "@/app/store/useUserProfile";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -8,6 +9,7 @@ import { AiOutlineSetting } from "react-icons/ai";
 function UserProfile() {
   const [isClickProfile, setIsClickProfile] = useState(false);
   const { role, name, setName, setRole } = useUserProfileStore();
+  const { setCourseList } = useMyCourseListStore();
 
   const router = useRouter();
   return (
@@ -28,10 +30,10 @@ function UserProfile() {
           (role == "teacher" ? (
             <span
               onClick={async () => {
+                setCourseList([]);
                 await fetch("/api/logout", {
                   method: "POST",
                 });
-
                 router.push("/login"); // 또는 원하는 페이지로 리디렉션
               }}
               className="absolute top-18 right-12 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md cursor-pointer transition-colors"
@@ -50,6 +52,7 @@ function UserProfile() {
               </span>
               <span
                 onClick={async () => {
+                  setCourseList([]);
                   await fetch("/api/logout", {
                     method: "POST",
                   });

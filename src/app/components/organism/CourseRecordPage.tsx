@@ -14,9 +14,11 @@ import StudentRecordSkeleton from "@/app/components/skeletons/StudentRecordSkele
 import ProgressEntireInputModal from "@/app/components/modals/ProgressEntireInputModal";
 import NotesEntireInputModal from "@/app/components/modals/NotesEntireInputModal";
 import LoadingModal from "../modals/LoadingModal";
+import { useMyCourseListStore } from "@/app/store/useMyCourseList";
 
 function CourseRecordPage() {
   const searchParams = useSearchParams();
+  const { setCourseList, setIsloadingCourseList } = useMyCourseListStore();
   const [isProgressEntireInputModalOpen, setIsProgressEntireInputModalOpen] =
     useState(false);
   const [isNotesEntireInputModalOpen, setIsNotesEntireInputModalOpen] =
@@ -242,6 +244,12 @@ function CourseRecordPage() {
                   }),
                 });
 
+                setIsloadingCourseList(true);
+                const res = await fetch(`/api/course/my`);
+                const data = await res.json();
+                setCourseList(data);
+                setIsloadingCourseList(false);
+
                 setIsCourseNameModify(false);
               }} // 포커스 아웃 시 수정 모드 종료
               onKeyDown={async (e) => {
@@ -258,6 +266,12 @@ function CourseRecordPage() {
                       courseId, // 실제 수정할 반 ID
                     }),
                   });
+
+                  setIsloadingCourseList(true);
+                  const res = await fetch(`/api/course/my`);
+                  const data = await res.json();
+                  setCourseList(data);
+                  setIsloadingCourseList(false);
                 }
               }}
               autoFocus

@@ -25,8 +25,8 @@ function CourseItem({ id, name }: CourseItemProps) {
   const { setNodeRef: setDroppableRef } = useDroppable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
-    zIndex: transform ? 50 : undefined,
-  };
+    transition: "box-shadow 0.2s, opacity 0.2s",
+  }; // 최소한만 인라인 style로
 
   // Draggable과 Droppable을 함께 적용
   const combinedRef = (node: HTMLElement | null) => {
@@ -39,7 +39,12 @@ function CourseItem({ id, name }: CourseItemProps) {
       key={id}
       ref={combinedRef}
       style={style}
-      className="mx-2 bg-[#F6F6F6] rounded-lg my-1"
+      className={`mx-2 bg-[#F6F6F6] rounded-lg my-1 transition-all duration-200 ease-out
+  ${
+    transform
+      ? "z-[9999] cursor-grabbing opacity-90 shadow-2xl scale-[0.96] rotate-[0.5deg]"
+      : "cursor-grab hover:shadow-md"
+  }`}
       {...listeners}
       {...attributes}
     >
